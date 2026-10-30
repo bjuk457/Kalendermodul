@@ -1,7 +1,15 @@
 // Kalendermodul – Listen-Kalenderkarte für Home Assistant.
 // Liest beliebige calendar.*-Entitäten (ICS/Remote Calendar, Google, CalDAV, Local …) über die HA-API.
 
-const PALETTE = ["#1e88e5", "#e53935", "#43a047", "#fb8c00", "#8e24aa", "#00897b", "#f4511e", "#3949ab"];
+// 20 Farben im Regenbogen-Verlauf für das Dropdown im Editor.
+const COLORS = [
+  ["#e53935", "Rot"], ["#f4511e", "Orangerot"], ["#fb8c00", "Orange"], ["#ffb300", "Bernstein"], ["#fdd835", "Gelb"],
+  ["#c0ca33", "Limette"], ["#7cb342", "Hellgrün"], ["#43a047", "Grün"], ["#2e7d32", "Dunkelgrün"], ["#00897b", "Türkis"],
+  ["#00acc1", "Cyan"], ["#039be5", "Hellblau"], ["#1e88e5", "Blau"], ["#3949ab", "Königsblau"], ["#5c6bc0", "Indigo"],
+  ["#7e57c2", "Violett"], ["#8e24aa", "Lila"], ["#ab47bc", "Purpur"], ["#d81b60", "Magenta"], ["#ec407a", "Pink"],
+];
+// Standardfarbe ohne Angabe: Schrittweite 7 hält benachbarte Kalender optisch auseinander.
+const defaultColor = (i) => COLORS[(i * 7) % COLORS.length][0];
 
 const pad = (n) => String(n).padStart(2, "0");
 const dayKey = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
@@ -46,7 +54,10 @@ class KalendermodulCard extends (typeof HTMLElement !== "undefined" ? HTMLElemen
               label_field: "entity",
               fields: {
                 entity: { label: "Kalender", required: true, selector: { entity: { filter: { domain: "calendar" } } } },
-                color: { label: "Farbe (z. B. #e53935)", selector: { text: {} } },
+                color: {
+                  label: "Farbe",
+                  selector: { select: { mode: "dropdown", custom_value: true, options: COLORS.map(([value, label]) => ({ value, label })) } },
+                },
               },
             },
           },
@@ -58,7 +69,7 @@ class KalendermodulCard extends (typeof HTMLElement !== "undefined" ? HTMLElemen
 
   static getStubConfig(hass) {
     const cal = Object.keys(hass.states).filter((e) => e.startsWith("calendar.")).slice(0, 2);
-    return { title: "Termine", days: 14, entities: cal.map((entity, i) => ({ entity, color: PALETTE[i] })) };
+    return { title: "Termine", days: 14, entities: cal.map((entity, i) => ({ entity, color: defaultColor(i) })) };
   }
 
   setConfig(config) {
@@ -68,7 +79,7 @@ class KalendermodulCard extends (typeof HTMLElement !== "undefined" ? HTMLElemen
       ...config,
       entities: config.entities.map((e, i) => {
         const c = typeof e === "string" ? { entity: e } : e;
-        return { ...c, color: c.color || PALETTE[i % PALETTE.length] };
+        return { ...c, color: c.color || defaultColor(i) };
       }),
     };
     this._events = null;
@@ -152,8 +163,7 @@ class KalendermodulCard extends (typeof HTMLElement !== "undefined" ? HTMLElemen
       .num { font-size: 2em; font-weight: 500; line-height: 1.1; }
       .wd, .mon { font-size: 0.8em; text-transform: uppercase; }
       .events { flex: 1; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-      .ev { border-left: 4px solid var(--c); padding-left: 10px; }
-      .sum { font-weight: 500; color: var(--primary-text-color); overflow-wrap: anywhere; }
+      .sum { font-weight: 500; color: var(--c); overflow-wrap: anywhere; }
       .time { font-size: 0.85em; color: var(--secondary-text-color); }
       .empty { padding: 16px 0; color: var(--secondary-text-color); }
     </style><ha-card><div class="wrap">${title}${body}</div></ha-card>`;

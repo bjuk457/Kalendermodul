@@ -1,6 +1,6 @@
 # Kalendermodul
 
-Schlichte Listen-Kalenderkarte für Home Assistant. Sie zeigt mehrere Kalender zusammen an, färbt die Termine nach Kalender ein und gruppiert sie nach Tagen. Der nächste Termin steht oben, links groß das Datum, rechts Titel und darunter die Zeit.
+Schlichte Listen-Kalenderkarte für Home Assistant. Sie zeigt mehrere Kalender zusammen an, färbt die Termine nach Kalender ein und gruppiert sie nach Tagen. Der nächste Termin steht oben, links groß das Datum, rechts der Titel in der Farbe seines Kalenders und darunter die Zeit.
 
 ## Kalender-Quellen
 
@@ -35,7 +35,7 @@ entities:
   - calendar.feiertage   # ohne Farbe -> automatische Farbe
 ```
 
-Die Farbe kann jeder CSS-Farbwert sein (`#hex`, `rgb()`, `var(--red-color)`). Die Termine werden alle 5 Minuten neu geladen.
+Im visuellen Editor wählst du die Farbe aus 20 Regenbogenfarben im Dropdown. Per YAML geht weiterhin jeder CSS-Farbwert (`#hex`, `rgb()`, `var(--red-color)`). Die Termine werden alle 5 Minuten neu geladen.
 
 ## Entwicklung
 
