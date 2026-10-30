@@ -139,7 +139,7 @@ class KalendermodulCard extends (typeof HTMLElement !== "undefined" ? HTMLElemen
     const todayKey = dayKey(now);
     const tomorrowKey = dayKey(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1));
     const fmtTime = (d) => d.toLocaleTimeString(lang, { hour: "2-digit", minute: "2-digit" });
-    const fmtDate = (d) => d.toLocaleDateString(lang, { day: "2-digit", month: "2-digit" });
+    const fmtDate = (d) => d.toLocaleDateString(lang, { day: "2-digit", month: "2-digit", year: "numeric" });
     const groups = groupEvents(this._events || [], now);
 
     const rows = groups.map((g) => {
