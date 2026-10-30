@@ -37,6 +37,10 @@ function groupEvents(events, now = new Date()) {
   return out;
 }
 
+// Ende ist exklusiv (Ganztägig: Folgetag 00:00; 22:00–00:00 zählt als ein Tag), daher 1 ms abziehen.
+const lastDay = (ev) => new Date(ev.end.getTime() - 1);
+const isMultiDay = (ev) => dayKey(ev.start) !== dayKey(lastDay(ev));
+
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 
 // Fallback nur, damit test.js die Logik unter Node laden kann.
@@ -135,12 +139,17 @@ class KalendermodulCard extends (typeof HTMLElement !== "undefined" ? HTMLElemen
     const todayKey = dayKey(now);
     const tomorrowKey = dayKey(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1));
     const fmtTime = (d) => d.toLocaleTimeString(lang, { hour: "2-digit", minute: "2-digit" });
+    const fmtDate = (d) => d.toLocaleDateString(lang, { day: "2-digit", month: "2-digit" });
     const groups = groupEvents(this._events || [], now);
 
     const rows = groups.map((g) => {
       const label = g.key === todayKey ? "Heute" : g.key === tomorrowKey ? "Morgen" : g.date.toLocaleDateString(lang, { weekday: "short" });
       const items = g.events.map((ev) => {
-        const time = ev.allDay ? "Ganztägig" : `${fmtTime(ev.start)} – ${fmtTime(ev.end)}`;
+        const time = isMultiDay(ev)
+          ? ev.allDay
+            ? `${fmtDate(ev.start)} – ${fmtDate(lastDay(ev))}`
+            : `${fmtDate(ev.start)} ${fmtTime(ev.start)} – ${fmtDate(ev.end)} ${fmtTime(ev.end)}`
+          : ev.allDay ? "Ganztägig" : `${fmtTime(ev.start)} – ${fmtTime(ev.end)}`;
         const loc = ev.location ? ` · ${esc(ev.location)}` : "";
         return `<div class="ev" style="--c:${esc(ev.color)}"><div class="sum">${esc(ev.summary)}</div><div class="time">${time}${loc}</div></div>`;
       });
@@ -176,4 +185,4 @@ if (typeof customElements !== "undefined" && !customElements.get("kalendermodul-
   window.customCards.push({ type: "kalendermodul-card", name: "Kalendermodul", description: "Terminliste mehrerer Kalender, farbig nach Kalender, gruppiert nach Tag." });
 }
 
-if (typeof module !== "undefined") module.exports = { groupEvents, parseTime };
+if (typeof module !== "undefined") module.exports = { groupEvents, parseTime, isMultiDay };
