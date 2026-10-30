@@ -145,7 +145,7 @@ class KalendermodulCard extends (typeof HTMLElement !== "undefined" ? HTMLElemen
         return `<div class="ev" style="--c:${esc(ev.color)}"><div class="sum">${esc(ev.summary)}</div><div class="time">${time}${loc}</div></div>`;
       });
       return `<div class="day${g.key === todayKey ? " today" : ""}">
-        <div class="date"><div class="num">${g.date.getDate()}</div><div class="wd">${esc(label)}</div><div class="mon">${esc(g.date.toLocaleDateString(lang, { month: "short" }))}</div></div>
+        <div class="date"><div class="wd">${esc(label)}</div><div class="num">${g.date.getDate()}</div><div class="mon">${esc(g.date.toLocaleDateString(lang, { month: "short" }))}</div></div>
         <div class="events">${items.join("")}</div></div>`;
     });
 
