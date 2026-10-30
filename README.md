@@ -35,7 +35,7 @@ entities:
   - calendar.feiertage   # ohne Farbe -> automatische Farbe
 ```
 
-Im visuellen Editor wählst du die Farbe aus 20 Regenbogenfarben im Dropdown. Per YAML geht weiterhin jeder CSS-Farbwert (`#hex`, `rgb()`, `var(--red-color)`). Die Termine werden alle 5 Minuten neu geladen.
+Im visuellen Editor wählst du die Farbe aus 20 Regenbogenfarben sowie Weiß und drei Grautönen im Dropdown. Per YAML geht weiterhin jeder CSS-Farbwert (`#hex`, `rgb()`, `var(--red-color)`). Die Termine werden alle 5 Minuten neu geladen.
 
 ## Entwicklung
 

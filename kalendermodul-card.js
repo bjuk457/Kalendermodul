@@ -7,9 +7,10 @@ const COLORS = [
   ["#c0ca33", "Limette"], ["#7cb342", "Hellgrün"], ["#43a047", "Grün"], ["#2e7d32", "Dunkelgrün"], ["#00897b", "Türkis"],
   ["#00acc1", "Cyan"], ["#039be5", "Hellblau"], ["#1e88e5", "Blau"], ["#3949ab", "Königsblau"], ["#5c6bc0", "Indigo"],
   ["#7e57c2", "Violett"], ["#8e24aa", "Lila"], ["#ab47bc", "Purpur"], ["#d81b60", "Magenta"], ["#ec407a", "Pink"],
+  ["#ffffff", "Weiß"], ["#bdbdbd", "Hellgrau"], ["#9e9e9e", "Grau"], ["#616161", "Dunkelgrau"],
 ];
-// Standardfarbe ohne Angabe: Schrittweite 7 hält benachbarte Kalender optisch auseinander.
-const defaultColor = (i) => COLORS[(i * 7) % COLORS.length][0];
+// Standardfarbe ohne Angabe: nur die 20 Regenbogenfarben, Schrittweite 7 hält benachbarte Kalender optisch auseinander.
+const defaultColor = (i) => COLORS[(i * 7) % 20][0];
 
 const pad = (n) => String(n).padStart(2, "0");
 const dayKey = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
