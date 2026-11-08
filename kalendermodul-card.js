@@ -15,7 +15,9 @@ const defaultColor = (i) => COLORS[(i * 7) % 20][0];
 const pad = (n) => String(n).padStart(2, "0");
 const dayKey = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 // Ganztägig: "YYYY-MM-DD" lokal parsen (new Date("YYYY-MM-DD") wäre UTC).
+// calendar.get_events liefert Strings ("YYYY-MM-DD" ganztägig, sonst ISO mit Uhrzeit).
 const parseTime = (t) => {
+  if (typeof t === "string") t = t.length === 10 ? { date: t } : { dateTime: t };
   if (t.dateTime) return { date: new Date(t.dateTime), allDay: false };
   const [y, m, d] = t.date.split("-").map(Number);
   return { date: new Date(y, m - 1, d), allDay: true };
@@ -114,11 +116,19 @@ class KalendermodulCard extends (typeof HTMLElement !== "undefined" ? HTMLElemen
     const now = new Date();
     const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const end = new Date(start.getTime() + this._config.days * 86400000);
-    const range = `start=${encodeURIComponent(start.toISOString())}&end=${encodeURIComponent(end.toISOString())}`;
     const results = await Promise.all(
       this._config.entities.map(async (cal) => {
         try {
-          const list = await this._hass.callApi("GET", `calendars/${cal.entity}?${range}`);
+          // Über die Websocket-Verbindung statt REST: REST-Aufrufe aus gedrosselten Tabs kamen mit abgelaufenem Token (Login-Warnungen in HA).
+          const res = await this._hass.callWS({
+            type: "call_service",
+            domain: "calendar",
+            service: "get_events",
+            target: { entity_id: cal.entity },
+            service_data: { start_date_time: start.toISOString(), end_date_time: end.toISOString() },
+            return_response: true,
+          });
+          const list = res.response[cal.entity].events;
           return list.map((ev) => {
             const s = parseTime(ev.start);
             const e = parseTime(ev.end);
